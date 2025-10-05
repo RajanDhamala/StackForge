@@ -1,17 +1,10 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ],
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": ".",        // root for absolute imports
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": ["./src/*"]   // allows import like "@/components/MyComp"
+    },
+    "checkJs": false       // disable TypeScript checks in JS files
+  },
+  "include": ["src"]       // include your source files for IntelliSense
 }
