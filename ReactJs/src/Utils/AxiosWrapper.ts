@@ -1,6 +1,15 @@
-import axios from "axios";
 
-const api = axios.create({
+
+import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+
+interface ApiResponse<T = any> {
+  success: boolean;
+  message: string;
+  data: T;
+  errors?: any[];
+}
+
+const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "/api",
   timeout: 10000,
   headers: { "Content-Type": "application/json" },
@@ -12,10 +21,10 @@ const api = axios.create({
 
 // Response interceptor
 api.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse<ApiResponse>) => {
     const res = response.data;
     if (!res.success) {
-      // Backend returned error format
+      // Backend returned ApiError format
       return Promise.reject(res);
     }
     return res.data; // only return the actual data
@@ -30,3 +39,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+;
