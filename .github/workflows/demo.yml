@@ -1,0 +1,39 @@
+name: CI/CD Boilerplate
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./Express
+
+      - name: Test server startup
+        working-directory: ./Express
+        run: |
+          echo "Starting server..."
+          nohup npm run dev > server.log 2>&1 &
+          sleep 10
+          if ! pgrep -f "node"; then
+            echo " Server failed to start!"
+            cat server.log
+            exit 1
+          fi
+          echo " Server started successfully!"
