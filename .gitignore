@@ -1,0 +1,32 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+out/
+
+# Vite cache
+.vite/
+
+# Editor / OS files
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Prisma
+prisma/dev.db
+prisma/migrations/
