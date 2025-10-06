@@ -11,7 +11,7 @@ const verifyPassword=async(plain,hashed)=>{
     return await bcrypt.compare(plain,hashed);
 }
 
-const CreateAccessToken = (id,email,fullName) => {
+const CreateAccessToken = (id,email,fullname) => {
     const payload = {
       id: id,
       fullname,
@@ -20,7 +20,7 @@ const CreateAccessToken = (id,email,fullName) => {
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
   }
   
-  const CreateRefreshToken = (id,email,fullName) => {
+  const CreateRefreshToken = (id,email,fullname) => {
     const payload = {
       id: id,
       email,

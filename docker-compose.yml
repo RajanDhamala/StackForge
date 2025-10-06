@@ -11,7 +11,7 @@ services:
       - backend1
       - backend2
     networks:
-      - rajan
+      - tinku
 
   backend1:
     build:
@@ -21,9 +21,11 @@ services:
       - ./Express/.env
     volumes:
       - common-space:/app/data
+    depends_on:
+      - mongodb
     networks:
-      - rajan
-  
+      - tinku
+
   backend2:
     build:
       context: ./Express
@@ -32,12 +34,25 @@ services:
       - ./Express/.env
     volumes:
       - common-space:/app/data
+    depends_on:
+      - mongodb
     networks:
-      - rajan
+      - tinku
+
+  mongodb:
+    image: mongo:6
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - tinku
 
 volumes:
   common-space:
+  mongo-data:
 
 networks:
-  rajan:
+  tinku:
     driver: bridge

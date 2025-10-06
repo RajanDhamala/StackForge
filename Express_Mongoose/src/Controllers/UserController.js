@@ -1,9 +1,10 @@
 import asyncHandler from "../Utils/AsyncHandler.js"
 import ApiError from "../Utils/ApiError.js"
 import ApiResponse from "../Utils/ApiResponse.js"
-import prisma from "../Utils/PrismaProvider.js"
+import User from "../Schemas/UserSchema.js"
 import Joi from "joi"
 import { hashPassword,verifyPassword,CreateAccessToken,CreateRefreshToken } from "../Utils/Authutils.js"
+import { response } from "express"
 
 const registerScheama=Joi.object({
     email:Joi.string().email().required(),
@@ -23,21 +24,17 @@ const RegisterUser=asyncHandler(async(req,res)=>{
      throw new ApiError(400, "Invalid input", error.details.map(d => d.message));
    }
 
-   const userExists=await prisma.user.findFirst({
-    where:{
-        email:value.email
-    }
-   })
-
+const userExists = await User.findOne({ email: value.email }).lean();
    if(userExists){
     throw new ApiError(400,'User with this email already exists')
    }
-   const pwd=hashPassword(value.password)
-   const newUser=await prisma.user.create({
+   const pwd=await hashPassword(value.password)
+   const newUser=await new User({
     email:value.email,
     fullname:value.fullname,
     password:pwd
    })
+   await newUser.save()
    return res.send (new ApiResponse(200,"User registered succesfully",newUser))
 })
 
@@ -46,23 +43,13 @@ const {error,value}=loginSchema.validate(req.body)
     if(error){
         throw new ApiError(400,'invlaid crednetials',error.details.map(d => d.message))
     }
-
-    const  exisingUser=await prisma.user.findFirst({
-        where:{
-            email:value.email
-        }
-        ,select:{
-            id:true,
-            email:true,
-            password:true
-        }
-        
-    })
+    const validemail=value.email.toLowerCase()
+    const  exisingUser=await User.findOne({email:validemail}).select("fullname _id email password") 
     if(!verifyPassword(value.password,exisingUser.password)){
         throw new ApiError(400,"invalid credentials")
     }
-    const newAccessToken=CreateAccessToken(exisingUser.id,exisingUser.email,exisingUser,fullname)
-    const newRefreshToken=CreateRefreshToken(exisingUser.id,exisingUser.email,exisingUser,fullname)
+    const newAccessToken=CreateAccessToken(exisingUser._id,exisingUser.email,exisingUser.fullname)
+    const newRefreshToken=CreateRefreshToken(exisingUser._id,exisingUser.email,exisingUser.fullname)
 
     res.cookie("accessToken",newAccessToken,{
     httpOnly: true,
@@ -94,8 +81,6 @@ const LogoutUser=asyncHandler(async(req,res)=>{
     })
     res.send(new ApiResponse(200,'User logged out succesfully'))
 })
-
-
 
 export {
     RegisterUser,LoginUser,LogoutUser
