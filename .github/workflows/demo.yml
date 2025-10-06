@@ -29,7 +29,7 @@ jobs:
           sleep 10  # wait for server to start
 
       - name: Test Vite dev server
-        working-directory: ./React
+        working-directory: ./ReactJs
         run: |
           if ! curl -s --fail http://localhost:5173/; then
             echo "Vite dev server is not accessible!"
