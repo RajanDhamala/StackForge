@@ -11,7 +11,7 @@ services:
       - backend1
       - backend2
     networks:
-      - rajan
+      - tinku
 
   backend1:
     build:
@@ -21,23 +21,40 @@ services:
       - ./Express/.env
     volumes:
       - common-space:/app/data
+    depends_on:
+      - postgres
     networks:
-      - rajan
-  
-  backend2:
-    build:
-      context: ./Express
-      target: production
-    env_file:
-      - ./Express/.env
+      - tinku
+#  if another backedn instance needed 
+  # backend2:
+  #   build:
+  #     context: ./Express
+  #     target: production
+  #   env_file:
+  #     - ./Express/.env
+  #   volumes:
+  #     - common-space:/app/data
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - tinku
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: myapp  
     volumes:
-      - common-space:/app/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
-      - rajan
+      - tinku
 
 volumes:
   common-space:
+  postgres-data:
 
 networks:
-  rajan:
+  tinku:
     driver: bridge

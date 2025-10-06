@@ -32,11 +32,13 @@ const RegisterUser=asyncHandler(async(req,res)=>{
    if(userExists){
     throw new ApiError(400,'User with this email already exists')
    }
-   const pwd=hashPassword(value.password)
+   const pwd=await hashPassword(value.password)
    const newUser=await prisma.user.create({
-    email:value.email,
+    data:{
+   email:value.email,
     fullname:value.fullname,
     password:pwd
+    }
    })
    return res.send (new ApiResponse(200,"User registered succesfully",newUser))
 })
@@ -54,15 +56,16 @@ const {error,value}=loginSchema.validate(req.body)
         ,select:{
             id:true,
             email:true,
-            password:true
+            password:true,
+            fullname:true
         }
         
     })
     if(!verifyPassword(value.password,exisingUser.password)){
         throw new ApiError(400,"invalid credentials")
     }
-    const newAccessToken=CreateAccessToken(exisingUser.id,exisingUser.email,exisingUser,fullname)
-    const newRefreshToken=CreateRefreshToken(exisingUser.id,exisingUser.email,exisingUser,fullname)
+    const newAccessToken=CreateAccessToken(exisingUser.id,exisingUser.email,exisingUser.fullname)
+    const newRefreshToken=CreateRefreshToken(exisingUser.id,exisingUser.email,exisingUser.fullname)
 
     res.cookie("accessToken",newAccessToken,{
     httpOnly: true,

@@ -5,6 +5,7 @@ import cors from "cors";
 import client from "prom-client";
 import { createLogger, transports, format } from "winston";
 import LokiTransport from "winston-loki";
+import UserRouter from "./src/Routes/UserRoute.js";
 
 dotenv.config();
 const app = express();
@@ -98,6 +99,8 @@ app.use((err, req, res, next) => {
   logger.error("Unhandled Express Error", { error: err.message, stack: err.stack });
   res.status(500).json({ error: "Internal Server Error" });
 });
+
+app.use("/users",UserRouter)
 
 export default app;
 
