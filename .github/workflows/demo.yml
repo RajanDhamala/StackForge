@@ -1,15 +1,11 @@
-name: CI/CD Boilerplate
+name: Frontend Dev Server Test
 
 on:
   push:
-    branches: ["main"]
-
-permissions:
-  contents: read
-  packages: write
+    branches: ["Js_react"]
 
 jobs:
-  build:
+  dev-server-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,17 +19,21 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: ./Express
+        working-directory: ./ReactJs
 
-      - name: Test server startup
-        working-directory: ./Express
+      - name: Start Vite dev server in background
+        working-directory: ./ReactJs
         run: |
-          echo "Starting server..."
+          echo "Starting Vite dev server..."
           nohup npm run dev > server.log 2>&1 &
-          sleep 10
-          if ! pgrep -f "node"; then
-            echo " Server failed to start!"
+          sleep 10  # wait for server to start
+
+      - name: Test Vite dev server
+        working-directory: ./React
+        run: |
+          if ! curl -s --fail http://localhost:5173/; then
+            echo "Vite dev server is not accessible!"
             cat server.log
             exit 1
           fi
-          echo " Server started successfully!"
+          echo "Vite dev server is running successfully!"
