@@ -20,11 +20,10 @@ const Whoareu = asyncHandler(async (req, res) => {
     console.log("Access token expired:", err.message);
   }
 
-  // Try refresh if access failed
   try {
     const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const user = {
-      id: decodedRefresh.id, // not _id
+      id: decodedRefresh.id,
       fullname: decodedRefresh.fullname,
       email: decodedRefresh.email,
     };

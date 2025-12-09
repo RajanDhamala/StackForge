@@ -44,12 +44,16 @@ const {error,value}=loginSchema.validate(req.body)
         throw new ApiError(400,'invlaid crednetials',error.details.map(d => d.message))
     }
     const validemail=value.email.toLowerCase()
-    const  exisingUser=await User.findOne({email:validemail}).select("fullname _id email password") 
-    if(!verifyPassword(value.password,exisingUser.password)){
+    const  existingUser=await User.findOne({email:validemail}).select("fullname _id email password") 
+
+    if(!existingUser){
         throw new ApiError(400,"invalid credentials")
     }
-    const newAccessToken=CreateAccessToken(exisingUser._id,exisingUser.email,exisingUser.fullname)
-    const newRefreshToken=CreateRefreshToken(exisingUser._id,exisingUser.email,exisingUser.fullname)
+    if(!await verifyPassword(value.password,existingUser.password)){
+        throw new ApiError(400,"invalid credentials")
+    }
+    const newAccessToken=CreateAccessToken(existingUser._id,existingUser.email,existingUser.fullname)
+    const newRefreshToken=CreateRefreshToken(existingUser._id,existingUser.email,existingUser.fullname)
 
     res.cookie("accessToken",newAccessToken,{
     httpOnly: true,
