@@ -26,19 +26,6 @@ services:
     networks:
       - tinku
 
-  backend2:
-    build:
-      context: ./Express
-      target: production
-    env_file:
-      - ./Express/.env
-    volumes:
-      - common-space:/app/data
-    depends_on:
-      - mongodb
-    networks:
-      - tinku
-
   mongodb:
     image: mongo:6
     container_name: mongodb
