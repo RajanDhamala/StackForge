@@ -29,7 +29,7 @@ const Whoareu = asyncHandler(async (req, res) => {
       email: decodedRefresh.email,
     };
 
-    const newAccessToken = CreateAccessToken(user.fullname, user.id, user.email);
+    const newAccessToken = CreateAccessToken(user.id, user.email,user.fullname);
 
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
